@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  app1:
+    image: golang:latest
+    container_name: app1
+    command: go run /app1/main.go
+    volumes:
+      - ./app1:/app1
+    depends_on:
+      - rabbitmq
+    networks:
+      - my-network
+
+  app2:
+    image: golang:latest
+    container_name: app2
+    command: go run /app2/main.go
+    volumes:
+      - ./app2:/app2
+    depends_on:
+      - rabbitmq
+    networks:
+      - my-network
+
+  rabbitmq:
+    image: "rabbitmq:management"  # Use "rabbitmq:management" image to enable RabbitMQ management plugin
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"  # Expose RabbitMQ management interface port
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin  # Set RabbitMQ admin user
+      - RABBITMQ_DEFAULT_PASS=adminpassword  # Set RabbitMQ admin password
+    networks:
+      - my-network
+
+networks:
+  my-network:
